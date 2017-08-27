@@ -23,6 +23,7 @@
 #include <boost/asio.hpp>
 #include <libpq-fe.h>
 
+#include <iostream>
 #include <functional>
 
 namespace postgrespp {
