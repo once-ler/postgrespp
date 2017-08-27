@@ -1,6 +1,9 @@
 CMakeFiles/
 lib/
 bin/
-CMakeCache.txt
-cmake_install.cmake_install
-Makefile
+**/CMakeCache.txt
+**/Makefile
+testing/CMakeFiles/
+testing/lib/
+testing/bin/
+**/cmake_install.cmake
