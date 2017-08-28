@@ -54,15 +54,15 @@ utility::StandaloneIoService& Connection::ioService() {
 }
 
 Connection::Status Connection::beginTransaction() {
-  return queryParams("BEGIN;", [](const error_code& ec, Result res) { });
+  return queryParams("BEGIN;", [](const error_code& ec, Result res) { }, ResultFormat::TEXT);
 }
 
 Connection::Status Connection::commit() {
-  return queryParams("COMMIT;", [](const error_code& ec, Result res) { });
+  return queryParams("COMMIT;", [](const error_code& ec, Result res) { }, ResultFormat::TEXT);
 }
 
 Connection::Status Connection::rollback() {
-  return queryParams("ROLLBACK;", [](const error_code& ec, Result res) { });
+  return queryParams("ROLLBACK;", [](const error_code& ec, Result res) { }, ResultFormat::TEXT);
 }
 
 Connection::~Connection() {

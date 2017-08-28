@@ -20,7 +20,8 @@
 
 #pragma once
 
-#include <endian.h>
+// #include <endian.h>
+#include "portable_endian.h"
 
 #include <cassert>
 #include <cstdint>

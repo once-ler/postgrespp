@@ -7,3 +7,8 @@ testing/CMakeFiles/
 testing/lib/
 testing/bin/
 **/cmake_install.cmake
+**/*.opendb
+**/*.db
+Debug/
+Release/
+x64/
