@@ -70,4 +70,15 @@ char* Result::get<char*>(int const& column) {
   return PQgetvalue(m_result, m_row, column);
 }
 
+template<>
+char* Result::getColumn<char*>(int const& column) {
+  assert(m_result != nullptr);
+  return PQfname(m_result, column);
+}
+template<>
+Oid Result::getColumn<Oid>(int const& column) {
+  assert(m_result != nullptr);
+  return PQftype(m_result, column);
+}
+
 }

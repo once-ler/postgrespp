@@ -59,6 +59,9 @@ public:
   template<typename T>
   T get(int const& column);
 
+  template<typename T>
+  T getColumn(int const& column);
+
   /**
    * @brief getStatus
    * @return Result status.
@@ -134,5 +137,10 @@ template<>
 int64_t Result::get<int64_t>(int const&);
 template<>
 char* Result::get<char*>(int const&);
+
+template<>
+char* Result::getColumn<char*>(int const&);
+template<>
+Oid Result::getColumn<Oid>(int const&);
 
 }// NS postgrespp

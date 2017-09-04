@@ -23,16 +23,18 @@
 
 using namespace postgrespp;
 
+// Reference: https://www.postgresql.org/docs/9.6/static/libpq-exec.html
 int main(int argc, char* argv[]) {
-  auto connection = Connection::create("host=127.0.0.1");
+  auto connection = Connection::create("host=127.0.0.1 port=5432 dbname=pccrms connect_timeout=10");
 
   auto onQueryExecuted = [connection](const boost::system::error_code& ec, Result result) {
     if (!ec) {
       while (result.next()) {
         char* str;
-
+        
         str = result.get<char*>(0);
         std::cout << "STR0: " << str << std::endl;
+        std::cout << result.getColumn<char*>(0) << std::endl;
         str = result.get<char*>(1);
         std::cout << "STR1: " << str << std::endl;
         str = result.get<char*>(2);
@@ -48,7 +50,7 @@ int main(int argc, char* argv[]) {
     Connection::ioService().service().stop();
   };
 
-  connection->queryParams("select * from test_table", std::move(onQueryExecuted),  Connection::ResultFormat::TEXT);
+  connection->queryParams("select * from v$12345678.droid", std::move(onQueryExecuted),  Connection::ResultFormat::TEXT);
 
   Connection::ioService().thread().join();
 

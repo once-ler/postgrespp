@@ -12,3 +12,5 @@ testing/bin/
 Debug/
 Release/
 x64/
+intermediate/
+build/
