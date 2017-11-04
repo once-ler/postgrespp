@@ -178,7 +178,40 @@ public:
   }
 };
 
+template<typename F>
+class BackgroundWorker {
+  vector<unique_ptr<thread>> threads;
+  F func;
+public:
+  explicit BackgroundWorker(F func_) : func(func_) {};
+  
+  template<typename ...U>
+  void start(U... args) {
+    auto params = { args... };
+    
+    for (const auto& e : params) {
+      threads.emplace_back(new thread(func, e));
+    }
+  }
+
+  /*
+  Calling start() is only necessary if calling program does not join on thread.
+  */
+  void join() {
+    auto len = threads.size();
+    if (len > 0) {
+      threads.at(len - 1)->join();
+    }
+  }
+};
+
 int main(int argc, char* argv[]) {
+  {
+    auto bg = BackgroundWorker<ClientHandler>(ClientHandler());
+    bg.start("TBL2", "FOO");
+    bg.join();
+  }
+
   std::vector<std::unique_ptr<std::thread>> threads;
 
   threads.emplace_back(new std::thread((ClientHandler()), "TBL2"));
