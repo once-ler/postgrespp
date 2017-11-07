@@ -99,9 +99,17 @@ exit_nicely(PGconn *conn) {
   exit(1);
 }
 
+struct PGNotifyResult {
+  string channel;
+  string data;
+  int pid;
+};
+
+using Callback = std::function<void(PGNotifyResult)>;
+
 class ClientHandler {
 public:
-  void operator()(const string& channel) {
+  void operator()(const string& channel, Callback callback = [](const PGNotifyResult& result) {}) {
     const char *conninfo = "dbname = pccrms";
     PGconn     *conn;
     PGresult   *res;
@@ -166,6 +174,10 @@ public:
         fprintf(stderr,
           "ASYNC NOTIFY of '%s' received %s from backend PID %d\n",
           notify->relname, notify->extra, notify->be_pid);
+
+        PGNotifyResult result{ notify->relname, notify->extra, notify->be_pid };
+        callback(result);
+
         PQfreemem(notify);
         nnotifies++;
       }
@@ -186,12 +198,17 @@ public:
   explicit BackgroundWorker(F func_) : func(func_) {};
   
   template<typename ...U>
-  void start(U... args) {
+  void startMany(U... args) {
     auto params = { args... };
     
     for (const auto& e : params) {
       threads.emplace_back(new thread(func, e));
     }
+  }
+
+  template<typename FUNC, typename ...U>
+  void start(FUNC callback, U... args) {
+    threads.emplace_back(new thread(func, args..., callback));
   }
 
   /*
@@ -208,7 +225,8 @@ public:
 int main(int argc, char* argv[]) {
   {
     auto bg = BackgroundWorker<ClientHandler>(ClientHandler());
-    bg.start("TBL2", "FOO");
+    bg.startMany("TBL2", "FOO");
+    bg.start([](const PGNotifyResult& result) { cout << result.data << endl; }, "BAR");
     bg.join();
   }
 
